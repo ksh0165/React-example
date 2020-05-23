@@ -1,0 +1,49 @@
+[출처] https://velog.io/@ejchaid/react-redux-g1k3n22l92
+
+reducer 폴더는 리듀서(reducer)로 구성된 폴더다. 
+
+리듀서는 액션 메서드에서 변경한 상태를 받아 기존의 상태를 새로운 상태로 변경하는 일을 한다. 
+reducer 폴더는 action 폴더와 같이 하나로 만들기도 하지만 도메인별로 구분해 만들기도 한다.
+액션 파일과 리듀서 파일을 한 파일에 합쳐서 사용하는 ducks 기법도 있다.
+
+액션과 리듀서를 분리하고 리듀서를 여러 개의 파일로 분리할 경우, index.js 파일에서는 분리한 리듀서를 합친다. 
+그러나 만약 파일의 개수가 많아진다면 ducks 기법을 사용하는 것을 고려할 수 있다.
+
+import todoAction from '../action/index';  
+const {ADD_TODO} = todoAction.todo;
+
+const todo = (state, action) => {  
+  switch (action.type) {
+    case ADD_TODO:
+      return {
+        text: action.text,
+        completed: false
+      };
+    default:
+      return state;
+  }
+}
+
+
+const todos = (state = [], action) => {  
+  switch (action.type) {
+    case ADD_TODO:
+      return [
+        ...state, todo(undefined, action)
+      ];
+    default:
+      return state;
+  }
+}
+
+다음 코드는 리듀서를 합쳐서 사용하는 index.js 파일의 예다.
+
+export default combineReducers({  
+  todos
+});
+
+리듀서는 스토어(store)를 새로 변경하는데, 입력받는 state와 반환하는 state가 항상 같은 순수 함수로 구현돼 있다. 
+그렇기 때문에 Redux로 이전의 state를 추적해 시간 여행을 하는 도구를 만들 수 있다.
+
+chrome redux extension으로 영상으로도 볼 수 있다.
+

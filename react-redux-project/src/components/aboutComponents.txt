@@ -1,0 +1,76 @@
+[출처] https://velog.io/@ejchaid/react-redux-g1k3n22l92
+
+component 폴더는 React 컴포넌트로 구성된 폴더다. 
+컴포넌트는 보통 도메인별로 구분되어 있다.
+Container component와 Presentational component를 구분해서 개발한다.
+
+1. container component
+컨테이너 컴포넌트는 여러 개의 프레젠테이션 컴포넌트로 구성돼 있으며, 
+데이터나 공통으로 관리해야 하는 객체, 컴포넌트 간의 인터랙션 등을 관리하는 컴포넌트다.
+
+다음 코드는 컨테이너 컴포넌트 역할을 하는 TODOList 컴포넌트를 구현한 TODOList.js 파일의 예다. 
+프레젠테이션 컴포넌트의 prop에 state를 설정하고, 액션을 보내는 함수를 설정했다.
+
+class TODOList extends Component {  
+  render() {
+    const {todos, onClick} = this.props;
+    return (
+      <ul>
+            {todos.map(todo =>
+                <Todo 
+                    key={todo.id}
+                    onClick={onClick}
+                    {...todo}
+                />
+            )}
+      </ul>
+    );
+  }
+}
+
+// 컨테이너 컴포넌트에서 프레젠테이션 컴포넌트로 전달하는 state
+const todolistStateToProps = (state) => {  
+  return {
+    todos: state.todos
+  }
+}
+
+// 컨테이너 컴포넌트에서 프레젠테이션 컴포넌트로 액션을 보내는 함수
+const todolistDispatchToProps = (dispatch) => {  
+    return {
+        onClick(data){
+          dispatch(complete(data)) // 액션 메서드
+        }
+    }
+}
+
+// 연결
+export default connect(todolistStateToProps,todolistDispatchToProps)(TODOList);
+
+
+2. presentational component
+
+프레젠테이션 컴포넌트는 일반적으로 알고 있는 UI 컴포넌트라 보면 된다. 
+즉, UI 컴포넌트인 프레젠테이션 컴포넌트를 컨테이너 컴포넌트에서 관리한다고 생각하면 된다.
+다음 코드는 프레젠테이션 컴포넌트인 TODO 컴포넌트를 구현한 TODO.js 파일의 예다.
+
+class TODO extends Component {  
+  render() {
+    const {id, todo, complete, onClick} = this.props; // 컨테이너 컴포넌트에서 받은 prop 
+    return (
+      <li id={id} 
+        onClick={() => onClick({
+            id : id, 
+            complete : !complete
+        })}
+        className={!!complete ? 'completed' : ''}
+      >{todo}</li>
+    );
+  }
+}
+
+예를 살펴보면 프레젠테이셔널 컴포넌트에는 비즈니스 로직이 없다. 
+비즈니스 로직은 컨테이너 컴포넌트에서 개발한다. 
+그래야 프레젠테이셔널 컴포넌트인 TODO 컴포넌트의 재활용성이 높아진다.
+
+공통 컴포넌트를 만들 때는 index.js 파일을 만들어 공통 컴포넌트의 링크를 추가하면 유지 보수가 더 쉽다.
