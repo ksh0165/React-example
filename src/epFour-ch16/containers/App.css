@@ -6,6 +6,11 @@
     box-sizing: border-box;
 }
 
-.toggle .active {
+.toggle.active {
     background: yellow;
+}
+
+h1 {
+    margin-top: 70px;
+    margin-left: 20px;
 }
